@@ -1,6 +1,6 @@
 # mkenv
 
-![](https://img.shields.io/crates/v/mkenv?style=flat-square) ![](https://img.shields.io/docsrs/mkenv?style=flat-square)
+[![](https://img.shields.io/crates/v/mkenv?style=flat-square)](https://crates.io/crates/mkenv) [![](https://img.shields.io/docsrs/mkenv?style=flat-square)](https://docs.rs/mkenv)
 
 `mkenv` is a lightweight Rust crate that provides the [`make_env!`](https://docs.rs/mkenv/latest/mkenv/macro.make_env.html) macro used to generate a struct containing all the necessary environment context. This allows to remove runtime errors when retrieving an environment variable that doesn't exist, by capturing them all at the beginning of the program. It is designed to raise an error on compile-time for necessary environment variables on release mode, and crashes the program on debug with a more clear message about all the variables the application uses.
 
