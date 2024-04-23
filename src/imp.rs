@@ -537,6 +537,7 @@ macro_rules! make_env {
 
             struct __WithoutIncluded {$(
                 #[allow(dead_code)]
+                $(#[cfg($($attr)*)])?
                 $field: $content,
             )*}
 
