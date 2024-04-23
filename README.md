@@ -32,11 +32,11 @@ struct AppEnv {
 }
 ```
 
-This struct implements the [`Env`]() trait which allows it to be instanciated via the [`get`]() method. This method will fill the fields of this struct according to the configuration made in the macro call.
+This struct implements the [`Env`](https://docs.rs/mkenv/0.1.0/mkenv/trait.Env.html#) trait which allows it to be instanciated via the [`get`](https://docs.rs/mkenv/0.1.0/mkenv/trait.Env.html#method.get) method. This method will fill the fields of this struct according to the configuration made in the macro call.
 
 You also have other methods if you wish to trace the captured variables during the construction of the struct.
 
-The idea is to use the output instance of this struct to initialize a static variable, and use the latter to get the necessary variables from anywhere in your code. A basic example would be to do (using the [`once_cell`]() crate):
+The idea is to use the output instance of this struct to initialize a static variable, and use the latter to get the necessary variables from anywhere in your code. A basic example would be to do (using the [`once_cell`](https://docs.rs/once_cell) crate):
 
 ```rust
 static ENV: Lazy<AppEnv> = Lazy::new(AppEnv::get);
@@ -68,7 +68,7 @@ The macro obviously supports retrieving environment variable normally, meaning a
 
 #### By parsing
 
-The macro supports parsing using the [`FromStr`]() trait implementation of the target type. For this, you need to provide the `parse` kind to the declaration of the environment variable.
+The macro supports parsing using the [`FromStr`](https://doc.rust-lang.org/stable/std/str/trait.FromStr.html#) trait implementation of the target type. For this, you need to provide the `parse` kind to the declaration of the environment variable.
 
 #### By reading the content of a file
 
@@ -179,7 +179,7 @@ mkenv::make_env! {AppEnv includes [UsedOnce as used_once]:
 }
 ```
 
-Then, when constructing the struct, you can call the `split` method from the [`EnvSplitIncluded`]() trait. This will give you a tuple containing:
+Then, when constructing the struct, you can call the `split` method from the [`EnvSplitIncluded`](https://docs.rs/mkenv/0.1.0/mkenv/trait.EnvSplitIncluded.html#) trait. This will give you a tuple containing:
 - A struct with the fields included in the `includes [...]` clause
 - A struct with all the other fields, that can safely be kept in memory at runtime
 
