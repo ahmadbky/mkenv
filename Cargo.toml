@@ -1,0 +1,15 @@
+[package]
+name = "mkenv"
+version = "0.1.0"
+edition = "2021"
+authors = ["Ahmad Baalbaky <ahmadjfbky@gmail.com>"]
+description = "Lightweight library for capturing the environment at compile time"
+repository = "https://github.com/ahmadbky/mkenv"
+license = "MIT"
+keywords = ["cli", "macro", "utility"]
+categories = ["accessibility", "value-formatting", "development-tools"]
+
+[dependencies]
+
+[dev-dependencies]
+once_cell = "1.19.0"
