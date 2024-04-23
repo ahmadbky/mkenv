@@ -1,6 +1,6 @@
 [package]
 name = "mkenv"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 authors = ["Ahmad Baalbaky <ahmadjfbky@gmail.com>"]
 description = "Lightweight library for capturing the environment at compile time"
