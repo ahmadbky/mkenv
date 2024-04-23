@@ -499,7 +499,7 @@ macro_rules! make_env {
 
         impl $crate::FmtReqEnv for $Name {
             fn fmt(__f: &mut $crate::__private::fmt::Formatter<'_>) -> $crate::__private::fmt::Result {
-                $($(<$IncludeName as FmtReqEnv>::fmt(f)?;)*)?
+                $($(<$IncludeName as $crate::FmtReqEnv>::fmt(__f)?;)*)?
                 $(
                     $(#[cfg($($attr)*)])?
                     writeln!(
