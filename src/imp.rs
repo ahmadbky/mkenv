@@ -551,6 +551,7 @@ macro_rules! make_env {
                             $include_field: self.$include_field,
                         )*)?},
                         Self::WithoutIncluded {$(
+                            $(#[cfg($($attr)*)])?
                             $field: self.$field,
                         )*}
                     )
@@ -591,6 +592,7 @@ macro_rules! make_env {
                                 $include_field,
                             )*)?
                             $(
+                                $(#[cfg($($attr)*)])?
                                 $field: $crate::make_env_impl!(@__bound_var $field $($DEFAULT)?),
                             )*
                         }
