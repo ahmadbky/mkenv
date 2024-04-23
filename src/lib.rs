@@ -81,7 +81,7 @@
 //!
 //! #### By parsing
 //!
-//! The macro supports parsing using the [`FromStr`]() trait implementation of the target type.
+//! The macro supports parsing using the [`FromStr`](std::str::FromStr) trait implementation of the target type.
 //! For this, you need to provide the `parse` kind to the declaration of the environment variable.
 //!
 //! #### By reading the content of a file
@@ -206,7 +206,7 @@
 //! ```
 //!
 //! Then, when constructing the struct, you can call the `split` method from
-//! the [`EnvSplitIncluded`]() trait. This will give you a tuple containing:
+//! the [`EnvSplitIncluded`] trait. This will give you a tuple containing:
 //! - A struct with the fields included in the `includes [...]` clause
 //! - A struct with all the other fields, that can safely be kept in memory at runtime
 //!
