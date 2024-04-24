@@ -1,9 +1,9 @@
 [package]
 name = "mkenv"
-version = "0.1.3"
+version = "0.1.4"
 edition = "2021"
 authors = ["Ahmad Baalbaky <ahmadjfbky@gmail.com>"]
-description = "Lightweight library for capturing the environment at compile time"
+description = "Lightweight yet useful macro for capturing the environment context at startup"
 repository = "https://github.com/ahmadbky/mkenv"
 license = "MIT"
 keywords = ["cli", "macro", "utility"]

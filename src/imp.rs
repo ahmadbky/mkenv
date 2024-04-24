@@ -377,17 +377,6 @@ macro_rules! make_env_impl {
         "[Default: {:?}] "
     };
 
-    (@__check_ct_env $_ENV_VAR:literal $_ENV_DESC:literal $_DEFAULT:ident) => {};
-    (@__check_ct_env $ENV_VAR:literal $ENV_DESC:literal) => {
-        #[cfg(not(debug_assertions))]
-        const _: () = {
-            let _ = env!(
-                $ENV_VAR,
-                concat!("Missing env var `", $ENV_VAR, "`: ", $ENV_DESC)
-            );
-        };
-    };
-
     (@__cap_var $captured:ident [$content:ty] normal ($method:ident)
             $field_ty:ident $DEFAULT:ident) => {{
         <$content>::$method($crate::make_env_impl!(@__cap_var $captured [$content] normal
@@ -472,9 +461,6 @@ macro_rules! make_env {
             #[derive(Debug)]
             #[repr(transparent)]
             struct $field_ty;
-
-            $(#[cfg($($attr)*)])?
-            $crate::make_env_impl!(@__check_ct_env $ENV_VAR $ENV_DESC $($DEFAULT)?);
 
             $(#[cfg($($attr)*)])?
             impl $crate::EnvVar for $field_ty {
@@ -607,6 +593,6 @@ macro_rules! make_env {
 #[macro_export]
 macro_rules! init_env {
     ($Env:path) => {
-        <$Env as EnvSplitIncluded>::WithoutIncluded
+        <$Env as $crate::EnvSplitIncluded>::WithoutIncluded
     };
 }

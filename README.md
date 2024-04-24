@@ -2,7 +2,7 @@
 
 [![](https://img.shields.io/crates/v/mkenv?style=flat-square)](https://crates.io/crates/mkenv) [![](https://img.shields.io/docsrs/mkenv?style=flat-square)](https://docs.rs/mkenv)
 
-`mkenv` is a lightweight Rust crate that provides the [`make_env!`](https://docs.rs/mkenv/latest/mkenv/macro.make_env.html) macro used to generate a struct containing all the necessary environment context. This allows to remove runtime errors when retrieving an environment variable that doesn't exist, by capturing them all at the beginning of the program. It is designed to raise an error on compile-time for necessary environment variables on release mode, and crashes the program on debug with a more clear message about all the variables the application uses.
+`mkenv` is a lightweight Rust crate that provides the [`make_env!`](https://docs.rs/mkenv/latest/mkenv/macro.make_env.html) macro used to generate a struct containing all the necessary environment context. This allows to remove runtime errors when retrieving an environment variable that doesn't exist, by capturing them all at the beginning of the program. It is designed to raise an error with a clear message about all the variables the application uses when the environment initialization fails.
 
 ## Example usage
 
@@ -79,7 +79,7 @@ You can provide the `file` kind to the declaration, which will read the file at 
 The macro supports wrapping types, or types that can be constructed from a string or a single value that can be parsed from a string. For this, you need to provide an argument to the kind field, which is the method used to construct the wrapping type. See the example below:
 
 ```rust
-mkenv::make_env! {
+mkenv::make_env! {AppEnv:
   timeout: {
     id: Timeout(std::time::Duration),
     kind: parse(from_secs),
@@ -96,7 +96,7 @@ The macro supports optional variables, as long as you provide a default value. T
 ```rust
 const DEFAULT_PORT: u16 = 3000;
 
-mkenv::make_env! {AppEnv
+mkenv::make_env! {AppEnv:
   port: {
     id: Port(u16),
     kind: parse,
