@@ -264,6 +264,8 @@ pub struct EnvError<E> {
     inner: CapturedVars<E>,
 }
 
+impl<E: FmtReqEnv> StdError for EnvError<E> {}
+
 impl<E> AsRef<CapturedVars<E>> for EnvError<E> {
     #[inline(always)]
     fn as_ref(&self) -> &CapturedVars<E> {
