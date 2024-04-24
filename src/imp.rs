@@ -474,12 +474,12 @@ macro_rules! make_env {
         $vis struct $Name {
             $($(
                 #[allow(dead_code)]
-                pub $include_field: $IncludeName,
+                $vis $include_field: $IncludeName,
             )*)?
             $(
                 $(#[cfg($($attr)*)])?
                 #[allow(dead_code)]
-                pub $field: $content,
+                $vis $field: $content,
             )*
         }
 
@@ -504,27 +504,27 @@ macro_rules! make_env {
         }
 
         const _: () = {
-            struct __Residual {
+            $vis struct __Residual {
                 $($(
                 #[allow(dead_code)]
-                    $include_field: Option<$IncludeName>,
+                    $vis $include_field: Option<$IncludeName>,
                 )*)?
                 $(
                     $(#[cfg($($attr)*)])?
                     #[allow(dead_code)]
-                    $field: Option<$content>,
+                    $vis $field: Option<$content>,
                 )*
             }
 
-            struct __OnlyIncluded {$($(
+            $vis struct __OnlyIncluded {$($(
                 #[allow(dead_code)]
-                $include_field: $IncludeName,
+                $vis $include_field: $IncludeName,
             )*)?}
 
-            struct __WithoutIncluded {$(
+            $vis struct __WithoutIncluded {$(
                 #[allow(dead_code)]
                 $(#[cfg($($attr)*)])?
-                $field: $content,
+                $vis $field: $content,
             )*}
 
             impl $crate::EnvSplitIncluded for $Name {
