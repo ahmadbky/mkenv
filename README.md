@@ -32,7 +32,7 @@ struct AppEnv {
 }
 ```
 
-This struct implements the [`Env`](https://docs.rs/mkenv/0.1.0/mkenv/trait.Env.html#) trait which allows it to be instanciated via the [`get`](https://docs.rs/mkenv/0.1.0/mkenv/trait.Env.html#method.get) method. This method will fill the fields of this struct according to the configuration made in the macro call.
+This struct implements the [`Env`](https://docs.rs/mkenv/latest/mkenv/trait.Env.html#) trait which allows it to be instanciated via the [`get`](https://docs.rs/mkenv/latest/mkenv/trait.Env.html#method.get) method. This method will fill the fields of this struct according to the configuration made in the macro call.
 
 You also have other methods if you wish to trace the captured variables during the construction of the struct.
 
@@ -179,7 +179,7 @@ mkenv::make_env! {AppEnv includes [UsedOnce as used_once]:
 }
 ```
 
-Then, when constructing the struct, you can call the `split` method from the [`EnvSplitIncluded`](https://docs.rs/mkenv/0.1.0/mkenv/trait.EnvSplitIncluded.html#) trait. This will give you a tuple containing:
+Then, when constructing the struct, you can call the `split` method from the [`EnvSplitIncluded`](https://docs.rs/mkenv/latest/mkenv/trait.EnvSplitIncluded.html#) trait. This will give you a tuple containing:
 - A struct with the fields included in the `includes [...]` clause
 - A struct with all the other fields, that can safely be kept in memory at runtime
 
