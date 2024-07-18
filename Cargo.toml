@@ -1,6 +1,6 @@
 [package]
 name = "mkenv"
-version = "0.1.7"
+version = "0.1.8"
 edition = "2021"
 authors = ["Ahmad Baalbaky <ahmadjfbky@gmail.com>"]
 description = "Lightweight yet useful macro for capturing the environment context at startup"
