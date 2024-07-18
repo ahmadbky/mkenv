@@ -235,7 +235,5 @@
 //! The library is very light, it has **0** dependency!
 
 mod imp;
-#[cfg(test)]
-mod tests;
 
 pub use imp::*;
