@@ -448,7 +448,7 @@ macro_rules! make_env_impl {
 /// See the [crate documentation](crate) to see how to use this.
 #[macro_export]
 macro_rules! make_env {
-    ($(#[$($main_attr:tt)*])* $vis:vis $Name:ident $(includes [$($IncludeName:ident as $include_field:ident),*])?: $(
+    ($(#[$($main_attr:tt)*])* $vis:vis $Name:ident $(includes [$($(#[doc = $include_doc:expr])* $IncludeName:ident as $include_field:ident),*])?: $(
         $(#[doc = $doc_attr:expr])*
         $(#[cfg($($attr:tt)*)])?
         $field:ident: {
@@ -477,6 +477,7 @@ macro_rules! make_env {
         #[allow(dead_code)]
         $vis struct $Name {
             $($(
+                $(#[doc = $include_doc])*
                 #[allow(dead_code)]
                 $vis $include_field: $IncludeName,
             )*)?
