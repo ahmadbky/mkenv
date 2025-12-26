@@ -5,11 +5,14 @@
 //! It is designed to raise an error with a clear message about all the variables
 //! the application uses when the environment initialization fails.
 //!
+//! > Note: due to a design change, items from version 0.1.8 are deprecated. They will probably
+//! > be removed in a future version.
+//!
 //! ## Example usage
 //!
 //! For each environment variable declaration, you need to provide at least these fields:
 //! - `id`: The identifier of the associated struct.
-//! This is generally the same identifier of the struct field but in CamelCase.
+//!   This is generally the same identifier of the struct field but in CamelCase.
 //! - `kind`: How to retrieve the environment variable.
 //! - `var`: The name of the environment variable as a string literal.
 //! - `desc`: A short description of it as a string literal.
@@ -43,11 +46,11 @@
 //!
 //! The idea is to use the output instance of this struct to initialize a static variable,
 //! and use the latter to get the necessary variables from anywhere in your code.
-//! A basic example would be to do (using the [`once_cell`](https://docs.rs/once_cell) crate):
+//! A basic example would be to do:
 //!
 //! ```
-//! # use once_cell::sync::Lazy; struct AppEnv; impl AppEnv { fn get() -> Self { Self } }
-//! static ENV: Lazy<AppEnv> = Lazy::new(AppEnv::get);
+//! # use std::sync::LazyLock; struct AppEnv; impl AppEnv { fn get() -> Self { Self } }
+//! static ENV: LazyLock<AppEnv> = LazyLock::new(AppEnv::get);
 //!
 //! fn env() -> &'static AppEnv {
 //!   &ENV
@@ -234,6 +237,32 @@
 //!
 //! The library is very light, it has **0** dependency!
 
+mod builder;
+mod descriptor;
+pub mod error;
+pub mod exec;
+pub mod readers;
+mod var_reader;
+
+#[cfg(test)]
+pub(crate) mod tests;
+
+pub use builder::VarReaderExt;
+pub use descriptor::{ConfValDescriptor, ConfigValDescriptor};
+pub use var_reader::VarReader;
+
+/// Utility module importing the most relevant types and traits.
+///
+/// It is meant to be imported like this: `use mkenv::prelude::*;`
+pub mod prelude {
+    pub use super::{readers::*, ConfigValDescriptor as _, VarReader as _, VarReaderExt as _};
+}
+
+#[deprecated(
+    since = "0.2.0",
+    note = "please refer to the crate documentation to use the new API"
+)]
 mod imp;
 
+#[allow(deprecated)]
 pub use imp::*;
