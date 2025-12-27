@@ -238,16 +238,20 @@
 //! The library is very light, it has **0** dependency!
 
 mod builder;
+mod config_desc;
 mod descriptor;
 pub mod error;
 pub mod exec;
 pub mod readers;
 mod var_reader;
 
+mod macros;
+
 #[cfg(test)]
 pub(crate) mod tests;
 
 pub use builder::VarReaderExt;
+pub use config_desc::ConfigDescriptor;
 pub use descriptor::{ConfValDescriptor, ConfigValDescriptor};
 pub use var_reader::VarReader;
 
@@ -255,7 +259,16 @@ pub use var_reader::VarReader;
 ///
 /// It is meant to be imported like this: `use mkenv::prelude::*;`
 pub mod prelude {
-    pub use super::{readers::*, ConfigValDescriptor as _, VarReader as _, VarReaderExt as _};
+    pub use super::{
+        exec::ConfigExecutor as _, readers::*, ConfigDescriptor as _, ConfigValDescriptor as _,
+        VarReader as _, VarReaderExt as _,
+    };
+}
+
+#[doc(hidden)]
+pub mod __private {
+    pub use super::macros::make_config_impl;
+    pub use std::{fmt, iter};
 }
 
 #[deprecated(

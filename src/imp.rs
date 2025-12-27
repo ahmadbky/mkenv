@@ -367,11 +367,6 @@ impl fmt::Display for Error {
 impl StdError for Error {}
 
 #[doc(hidden)]
-pub mod __private {
-    pub use std::fmt;
-}
-
-#[doc(hidden)]
 #[macro_export]
 macro_rules! make_env_impl {
     (@__default_span) => { "" };
