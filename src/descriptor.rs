@@ -3,6 +3,7 @@
 use std::fmt;
 
 /// Describes a configuration value.
+#[derive(Debug)]
 pub struct ConfValDescriptor {
     /// The name of the environment variable this configuration value is read from.
     pub var_name: &'static str,

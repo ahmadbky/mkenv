@@ -3,7 +3,7 @@ use std::fmt;
 use crate::descriptor::ConfigValDescriptor;
 
 /// Represents types able to read a value from the process environment.
-#[cfg_attr(nightly, doc(notable_trait))]
+#[cfg_attr(docsrs, doc(notable_trait))]
 pub trait VarReader {
     /// The type of the read output.
     type Output;
@@ -15,7 +15,7 @@ pub trait VarReader {
 
     /// Reads and returns the value from the environment, or panics on error.
     ///
-    /// ## Panic
+    /// # Panic
     ///
     /// This function panics if it couldn't read the value from the environment, by printing
     /// a formatted message about the variable that failed.

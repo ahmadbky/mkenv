@@ -201,7 +201,7 @@ macro_rules! make_config_impl {
     // ---------------
 
     (@__field_kind_call $self:ident $field:ident $Config:ty) => {
-        <$Config as $crate::exec::ConfigExecutor>::try_exec(&$self.$field)
+        <$Config as $crate::exec::ConfigExecutor>::exec_raw(&$self.$field)
             .into_iter()
     };
 
@@ -248,9 +248,10 @@ macro_rules! make_config {
             #[automatically_derived]
             impl $crate::exec::ConfigExecutor for $Name {
                 type Iter<'a> = $crate::__private::make_config_impl!(@__field_kind
-                    'a $([$($field_config)*])*);
+                    'a $([$($field_config)*])*
+                );
 
-                fn try_exec(&self) -> Self::Iter<'_> {
+                fn exec_raw(&self) -> Self::Iter<'_> {
                     #[allow(unused_imports)]
                     use $crate::prelude::*;
 
@@ -290,7 +291,7 @@ mod tests {
         }
 
         let config = TestConfig::define();
-        let res = config.try_exec();
+        let res = config.exec_raw();
 
         itertools::assert_equal(
             res.map(|res| res.config.var_name),
@@ -324,7 +325,7 @@ mod tests {
         }
 
         let config = Bar::define();
-        let res = config.try_exec();
+        let res = config.exec_raw();
 
         itertools::assert_equal(
             res.map(|res| res.config.var_name),

@@ -1,6 +1,6 @@
 //! Contains everything related to the execution of a full read of a configuration.
 
-use std::{error::Error, fmt};
+use std::{error::Error, fmt, panic};
 
 use crate::{
     descriptor::{ConfValDescriptor, ConfigValDescriptor},
@@ -30,12 +30,14 @@ impl<'a> ExecResult<'a> {
     }
 }
 
+#[derive(Debug)]
 struct ExecFailedResult<'a> {
     config: &'a ConfValDescriptor,
     error: Box<dyn Error + 'a>,
 }
 
 /// Formats the results of a whole configuration read.
+#[derive(Debug)]
 pub struct FmtExecResults<'a> {
     correct_vars: Vec<&'a ConfValDescriptor>,
     incorrect_vars: Vec<ExecFailedResult<'a>>,
@@ -83,6 +85,8 @@ impl fmt::Display for FmtExecResults<'_> {
     }
 }
 
+impl Error for FmtExecResults<'_> {}
+
 /// Returns a formatted version of the given configuration value results.
 pub fn fmt_exec_results<'a, I>(results: I) -> FmtExecResults<'a>
 where
@@ -115,6 +119,72 @@ pub trait ConfigExecutor {
     where
         Self: 'a;
 
-    /// Reads the whole configuration values set, and returns the result.
-    fn try_exec(&self) -> Self::Iter<'_>;
+    /// Reads the whole configuration values set, and returns the result in the form of an iterator.
+    ///
+    /// # Note about caching
+    ///
+    /// Please note that for types using a cached configuration, this method will make it use
+    /// the related environment variable for the first time (if not done previously).
+    ///
+    /// The consequence is that for next reads using the [`VarReader`] trait, even if the
+    /// environment changed in the mean time, the result will always be the same for the fields
+    /// using the cached type.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// # use mkenv::prelude::*;
+    /// use mkenv::make_config;
+    ///
+    /// make_config! {
+    ///   struct MyConfig {
+    ///     user: {
+    ///       var_name: "USER",
+    ///       layers: [cached()],
+    ///     }
+    ///   }
+    /// }
+    ///
+    /// let config = MyConfig::define();
+    /// // Once this method is called...
+    /// let _ = config.exec_raw();
+    /// // ...the return of the `read_var` for this field
+    /// // will always be the same.
+    /// let user = config.user.read_var();
+    /// ```
+    fn exec_raw(&self) -> Self::Iter<'_>;
+
+    /// Reads the configuration, and returns a formatted result in case of any error.
+    ///
+    /// If some fields use a cached layer, consider reading the note about [caching][1]
+    ///
+    /// # Return
+    ///
+    /// This method returns `Err(_)` if any configuration value failed to read, and `Ok(_)`
+    /// otherwise.
+    ///
+    /// [1]: ConfigExecutor#note-about-caching
+    fn try_exec(&self) -> Result<(), FmtExecResults<'_>> {
+        let res = fmt_exec_results(self.exec_raw());
+        if res.incorrect_vars.is_empty() {
+            Ok(())
+        } else {
+            Err(res)
+        }
+    }
+
+    /// Reads the configuration, and panics in case of any error.
+    ///
+    /// If some fields use a cached layer, consider reading the note about [caching][1]
+    ///
+    /// # Panic
+    ///
+    /// This method panics if any configuration value failed to read.
+    ///
+    /// [1]: ConfigExecutor#note-about-caching
+    fn exec(&self) {
+        self.try_exec().unwrap_or_else(|e| {
+            panic!("{e}");
+        });
+    }
 }
