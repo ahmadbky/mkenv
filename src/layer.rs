@@ -3,7 +3,7 @@ use std::fmt;
 use crate::descriptor::ConfigValueDescriptor;
 
 /// Represents types able to read a value from the process environment.
-#[cfg_attr(docsrs, doc(notable_trait))]
+#[cfg_attr(feature = "nightly", doc(notable_trait))]
 pub trait Layer {
     /// The type of the read output.
     type Output;

@@ -152,7 +152,7 @@ mod tests {
         const FILE_PATH: &str = "./__test_parsed_file_path";
 
         let config = TextVar::from_var_name(VAR_NAME)
-            .parsed(|input| Ok(input.split(":").skip(1).next().unwrap().to_owned()))
+            .parsed(|input| Ok(input.split(":").nth(1).unwrap().to_owned()))
             .file_read();
 
         let res = with_file(FILE_PATH, "hello", || {
@@ -171,9 +171,8 @@ mod tests {
             .parsed(|input| {
                 input
                     .split(":")
-                    .skip(1)
-                    .next()
-                    .ok_or_else(|| format!("this is bad").into())
+                    .nth(1)
+                    .ok_or_else(|| "this is bad".into())
                     .map(|s| s.to_owned())
             })
             .file_read();

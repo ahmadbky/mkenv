@@ -1,19 +1,24 @@
 [package]
 name = "mkenv"
 version = "0.1.8"
-edition = "2021"
+edition = "2024"
 authors = ["Ahmad Baalbaky <ahmadjfbky@gmail.com>"]
-description = "Lightweight yet useful macro for capturing the environment context at startup"
+description = "Lightweight yet useful library to help you define the environment your app needs"
 repository = "https://github.com/ahmadbky/mkenv"
 license = "MIT"
-keywords = ["cli", "macro", "utility"]
+keywords = ["macro", "utility"]
 categories = ["accessibility", "value-formatting", "development-tools"]
+rust-version = "1.92.0"
 
 [dependencies]
 
 [dev-dependencies]
 itertools = "0.14.0"
 
+[features]
+default = []
+nightly = []
+
 [package.metadata.docs.rs]
 all-features = true
-rustdoc-args = ["--generate-link-to-definition", "--cfg", "docsrs"]
+rustdoc-args = ["--generate-link-to-definition"]

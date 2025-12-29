@@ -31,6 +31,13 @@ pub trait ConfigValueDescriptor {
     fn get_descriptor(&self) -> &VarDescriptor;
 }
 
+impl<T: ConfigValueDescriptor> ConfigValueDescriptor for &T {
+    #[inline(always)]
+    fn get_descriptor(&self) -> &VarDescriptor {
+        <T as ConfigValueDescriptor>::get_descriptor(self)
+    }
+}
+
 /// Represents types able to describe a set of [configuration values][1].
 ///
 /// [1]: crate::layers

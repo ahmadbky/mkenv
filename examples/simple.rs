@@ -23,10 +23,6 @@ fn main() {
     }
 
     let config = MyConfig::define();
-    let res = config.try_init();
-    if let Err(res) = res {
-        eprintln!("{res}");
-    } else {
-        println!("everything is fine");
-    }
+    config.init();
+    println!("everything is fine");
 }

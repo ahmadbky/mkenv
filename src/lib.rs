@@ -237,6 +237,8 @@
 //!
 //! The library is very light, it has **0** dependency!
 
+#![cfg_attr(feature = "nightly", feature(doc_notable_trait))]
+
 mod builder;
 mod descriptor;
 pub mod error;

@@ -104,7 +104,7 @@ mod tests {
         let config = TextVar::from_var_name(VAR_NAME).parsed(|input| {
             input
                 .parse::<u64>()
-                .map(|n| Duration::from_millis(n))
+                .map(Duration::from_millis)
                 .map_err(From::from)
         });
 
