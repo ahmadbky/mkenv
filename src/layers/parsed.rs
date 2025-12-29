@@ -3,9 +3,9 @@
 use std::error::Error;
 
 use crate::{
-    descriptor::{ConfValDescriptor, ConfigValDescriptor},
+    descriptor::{ConfigValueDescriptor, VarDescriptor},
     error::{ParseError, ReadVarError},
-    var_reader::VarReader,
+    layer::Layer,
 };
 
 /// The type of the parsing function.
@@ -27,23 +27,23 @@ pub type ParseFn<T> = fn(&str) -> Result<T, Box<dyn Error>>;
 /// assert_eq!(res, Ok(30));
 /// ```
 ///
-/// [1]: crate::builder::VarReaderExt::parsed
+/// [1]: crate::builder::LayerExt::parsed
 pub struct Parsed<T, V> {
     pub(crate) var: V,
     pub(crate) parse_fn: ParseFn<T>,
 }
 
-impl<T, V: ConfigValDescriptor> ConfigValDescriptor for Parsed<T, V> {
+impl<T, V: ConfigValueDescriptor> ConfigValueDescriptor for Parsed<T, V> {
     #[inline]
-    fn describe_config_val(&self) -> &ConfValDescriptor {
-        self.var.describe_config_val()
+    fn get_descriptor(&self) -> &VarDescriptor {
+        self.var.get_descriptor()
     }
 }
 
-impl<T, V> VarReader for Parsed<T, V>
+impl<T, V> Layer for Parsed<T, V>
 where
-    V: VarReader<Output: AsRef<str>>,
-    ReadVarError: From<<V as VarReader>::Error>,
+    V: Layer<Output: AsRef<str>>,
+    ReadVarError: From<<V as Layer>::Error>,
 {
     type Output = T;
     type Error = ReadVarError;

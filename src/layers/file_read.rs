@@ -3,9 +3,9 @@
 use std::path::Path;
 
 use crate::{
-    descriptor::{ConfValDescriptor, ConfigValDescriptor},
+    descriptor::{ConfigValueDescriptor, VarDescriptor},
     error::ReadVarError,
-    var_reader::VarReader,
+    layer::Layer,
 };
 
 /// A configuration value that reads the content of the specified file.
@@ -27,26 +27,26 @@ use crate::{
 /// assert_eq!(res.as_deref(), Ok("hello"));
 /// ```
 ///
-/// [1]: crate::builder::VarReaderExt::file_read
+/// [1]: crate::builder::LayerExt::file_read
 pub struct FileRead<V> {
     pub(crate) var: V,
 }
 
-impl<V> ConfigValDescriptor for FileRead<V>
+impl<V> ConfigValueDescriptor for FileRead<V>
 where
-    V: ConfigValDescriptor,
+    V: ConfigValueDescriptor,
 {
     #[inline]
-    fn describe_config_val(&self) -> &ConfValDescriptor {
-        self.var.describe_config_val()
+    fn get_descriptor(&self) -> &VarDescriptor {
+        self.var.get_descriptor()
     }
 }
 
-impl<V> VarReader for FileRead<V>
+impl<V> Layer for FileRead<V>
 where
-    V: VarReader,
-    <V as VarReader>::Output: AsRef<Path>,
-    ReadVarError: From<<V as VarReader>::Error>,
+    V: Layer,
+    <V as Layer>::Output: AsRef<Path>,
+    ReadVarError: From<<V as Layer>::Error>,
 {
     type Output = String;
     type Error = ReadVarError;

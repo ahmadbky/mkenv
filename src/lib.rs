@@ -238,30 +238,28 @@
 //! The library is very light, it has **0** dependency!
 
 mod builder;
-mod config_desc;
 mod descriptor;
 pub mod error;
 pub mod exec;
-pub mod readers;
-mod var_reader;
+mod layer;
+pub mod layers;
 
 mod macros;
 
 #[cfg(test)]
 pub(crate) mod tests;
 
-pub use builder::VarReaderExt;
-pub use config_desc::ConfigDescriptor;
-pub use descriptor::{ConfValDescriptor, ConfigValDescriptor};
-pub use var_reader::VarReader;
+pub use builder::LayerExt;
+pub use descriptor::{ConfigDescriptor, ConfigValueDescriptor, VarDescriptor};
+pub use layer::Layer;
 
 /// Utility module importing the most relevant types and traits.
 ///
 /// It is meant to be imported like this: `use mkenv::prelude::*;`
 pub mod prelude {
     pub use super::{
-        exec::ConfigExecutor as _, readers::*, ConfigDescriptor as _, ConfigValDescriptor as _,
-        VarReader as _, VarReaderExt as _,
+        exec::ConfigInitializer as _, layers::*, ConfigDescriptor as _, ConfigValueDescriptor as _,
+        Layer as _, LayerExt as _,
     };
 }
 

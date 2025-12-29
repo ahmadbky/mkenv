@@ -4,7 +4,7 @@ use std::fmt;
 
 /// Describes a configuration value.
 #[derive(Debug)]
-pub struct ConfValDescriptor {
+pub struct VarDescriptor {
     /// The name of the environment variable this configuration value is read from.
     pub var_name: &'static str,
 
@@ -12,7 +12,7 @@ pub struct ConfValDescriptor {
     pub(crate) default_val_fmt: Option<&'static str>,
 }
 
-impl fmt::Display for ConfValDescriptor {
+impl fmt::Display for VarDescriptor {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "`{}`", self.var_name)?;
         if let Some(desc) = self.description {
@@ -26,7 +26,15 @@ impl fmt::Display for ConfValDescriptor {
 }
 
 /// Represents types able to describe a configuration value.
-pub trait ConfigValDescriptor {
+pub trait ConfigValueDescriptor {
     /// Returns the descriptor of the configuration value.
-    fn describe_config_val(&self) -> &ConfValDescriptor;
+    fn get_descriptor(&self) -> &VarDescriptor;
+}
+
+/// Represents types able to describe a set of [configuration values][1].
+///
+/// [1]: crate::layers
+pub trait ConfigDescriptor: Sized {
+    /// Creates the configuration descriptor.
+    fn define() -> Self;
 }

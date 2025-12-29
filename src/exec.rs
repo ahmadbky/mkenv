@@ -3,14 +3,15 @@
 use std::{error::Error, fmt, panic};
 
 use crate::{
-    descriptor::{ConfValDescriptor, ConfigValDescriptor},
-    var_reader::VarReader,
+    descriptor::{ConfigValueDescriptor, VarDescriptor},
+    error::ConfigInitError,
+    layer::Layer,
 };
 
 /// The result of a read of a configuration value.
 pub struct ExecResult<'a> {
     #[doc(hidden)]
-    pub config: &'a ConfValDescriptor,
+    pub config: &'a VarDescriptor,
     #[doc(hidden)]
     pub error: Option<Box<dyn Error + 'a>>,
 }
@@ -19,28 +20,27 @@ impl<'a> ExecResult<'a> {
     #[doc(hidden)]
     pub fn from_config<T>(config: &'a T) -> Self
     where
-        &'a T: VarReader,
-        Box<dyn Error + 'a>: From<<&'a T as VarReader>::Error>,
-        T: ConfigValDescriptor,
+        &'a T: Layer,
+        Box<dyn Error + 'a>: From<<&'a T as Layer>::Error>,
+        T: ConfigValueDescriptor,
     {
         Self {
-            config: config.describe_config_val(),
+            config: config.get_descriptor(),
             error: config.try_read_var().err().map(From::from),
         }
     }
 }
 
 #[derive(Debug)]
-struct ExecFailedResult<'a> {
-    config: &'a ConfValDescriptor,
+pub(crate) struct ExecFailedResult<'a> {
+    config: &'a VarDescriptor,
     error: Box<dyn Error + 'a>,
 }
 
 /// Formats the results of a whole configuration read.
-#[derive(Debug)]
 pub struct FmtExecResults<'a> {
-    correct_vars: Vec<&'a ConfValDescriptor>,
-    incorrect_vars: Vec<ExecFailedResult<'a>>,
+    pub(crate) correct_vars: Vec<&'a VarDescriptor>,
+    pub(crate) incorrect_vars: Vec<ExecFailedResult<'a>>,
 }
 
 impl fmt::Display for FmtExecResults<'_> {
@@ -85,8 +85,6 @@ impl fmt::Display for FmtExecResults<'_> {
     }
 }
 
-impl Error for FmtExecResults<'_> {}
-
 /// Returns a formatted version of the given configuration value results.
 pub fn fmt_exec_results<'a, I>(results: I) -> FmtExecResults<'a>
 where
@@ -113,7 +111,7 @@ where
 }
 
 /// Represents types able to read a set of configuration values.
-pub trait ConfigExecutor {
+pub trait ConfigInitializer {
     /// The type of the resulting collection of the read.
     type Iter<'a>: IntoIterator<Item = ExecResult<'a>>
     where
@@ -126,7 +124,7 @@ pub trait ConfigExecutor {
     /// Please note that for types using a cached configuration, this method will make it use
     /// the related environment variable for the first time (if not done previously).
     ///
-    /// The consequence is that for next reads using the [`VarReader`] trait, even if the
+    /// The consequence is that for next reads using the [`Layer`] trait, even if the
     /// environment changed in the mean time, the result will always be the same for the fields
     /// using the cached type.
     ///
@@ -147,12 +145,12 @@ pub trait ConfigExecutor {
     ///
     /// let config = MyConfig::define();
     /// // Once this method is called...
-    /// let _ = config.exec_raw();
+    /// let _ = config.init_raw();
     /// // ...the return of the `read_var` for this field
     /// // will always be the same.
     /// let user = config.user.read_var();
     /// ```
-    fn exec_raw(&self) -> Self::Iter<'_>;
+    fn init_raw(&self) -> Self::Iter<'_>;
 
     /// Reads the configuration, and returns a formatted result in case of any error.
     ///
@@ -163,13 +161,13 @@ pub trait ConfigExecutor {
     /// This method returns `Err(_)` if any configuration value failed to read, and `Ok(_)`
     /// otherwise.
     ///
-    /// [1]: ConfigExecutor#note-about-caching
-    fn try_exec(&self) -> Result<(), FmtExecResults<'_>> {
-        let res = fmt_exec_results(self.exec_raw());
+    /// [1]: ConfigInitializer#note-about-caching
+    fn try_init(&self) -> Result<(), ConfigInitError<'_>> {
+        let res = fmt_exec_results(self.init_raw());
         if res.incorrect_vars.is_empty() {
             Ok(())
         } else {
-            Err(res)
+            Err(ConfigInitError { error: res })
         }
     }
 
@@ -181,9 +179,9 @@ pub trait ConfigExecutor {
     ///
     /// This method panics if any configuration value failed to read.
     ///
-    /// [1]: ConfigExecutor#note-about-caching
-    fn exec(&self) {
-        self.try_exec().unwrap_or_else(|e| {
+    /// [1]: ConfigInitializer#note-about-caching
+    fn init(&self) {
+        self.try_init().unwrap_or_else(|e| {
             panic!("{e}");
         });
     }

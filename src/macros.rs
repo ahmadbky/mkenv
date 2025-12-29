@@ -17,7 +17,7 @@ macro_rules! make_config_impl {
     };
 
     (@__field_config_ty_layers layers: [] $($_rest:tt)*) => {
-        $crate::readers::TextVar
+        $crate::layers::TextVar
     };
 
     (@__field_config_ty_layers layers: [$($layers_tt:tt)+] $($_rest:tt)*) => {
@@ -26,7 +26,7 @@ macro_rules! make_config_impl {
 
     // Case where the `layers` key wasn't provided
     (@__field_config_ty_layers $($_rest:tt)*) => {
-        $crate::readers::TextVar
+        $crate::layers::TextVar
     };
 
     (@__field_config_ty_layers_content
@@ -34,7 +34,7 @@ macro_rules! make_config_impl {
     ) => {
         $crate::__private::make_config_impl!(@__field_config_ty_layer
             [$([ $func_ident $(<$($func_gen),*>)? ($($func_content)*) ])*]
-            $crate::readers::TextVar
+            $crate::layers::TextVar
         )
     };
 
@@ -50,42 +50,42 @@ macro_rules! make_config_impl {
     (@__field_config_ty_layer [[cached()] $([$($rest:tt)*])*] $($wrapped:tt)* ) => {
         $crate::__private::make_config_impl!(@__field_config_ty_layer
             [$([$($rest)*])*]
-            $crate::readers::Cached<$($wrapped)*>
+            $crate::layers::Cached<$($wrapped)*>
         )
     };
 
     (@__field_config_ty_layer [[file_read()] $([$($rest:tt)*])*] $($wrapped:tt)* ) => {
         $crate::__private::make_config_impl!(@__field_config_ty_layer
             [$([$($rest)*])*]
-            $crate::readers::FileRead<$($wrapped)*>
+            $crate::layers::FileRead<$($wrapped)*>
         )
     };
 
     (@__field_config_ty_layer [[parsed<$parse_ty:ty>($($_content:tt)*)] $([$($rest:tt)*])*] $($wrapped:tt)* ) => {
         $crate::__private::make_config_impl!(@__field_config_ty_layer
             [$([$($rest)*])*]
-            $crate::readers::Parsed<$parse_ty, $($wrapped)*>
+            $crate::layers::Parsed<$parse_ty, $($wrapped)*>
         )
     };
 
     (@__field_config_ty_layer [[parsed_from_str<$parse_ty:ty>()] $([$($rest:tt)*])*] $($wrapped:tt)* ) => {
         $crate::__private::make_config_impl!(@__field_config_ty_layer
             [$([$($rest)*])*]
-            $crate::readers::Parsed<$parse_ty, $($wrapped)*>
+            $crate::layers::Parsed<$parse_ty, $($wrapped)*>
         )
     };
 
     (@__field_config_ty_layer [[or_default_val($($_content:tt)*)] $([$($rest:tt)*])*] $($wrapped:tt)* ) => {
         $crate::__private::make_config_impl!(@__field_config_ty_layer
             [$([$($rest)*])*]
-            $crate::readers::OrDefault<$($wrapped)*>
+            $crate::layers::OrDefault<$($wrapped)*>
         )
     };
 
     (@__field_config_ty_layer [[or_default()] $([$($rest:tt)*])*] $($wrapped:tt)* ) => {
         $crate::__private::make_config_impl!(@__field_config_ty_layer
             [$([$($rest)*])*]
-            $crate::readers::OrDefault<$($wrapped)*>
+            $crate::layers::OrDefault<$($wrapped)*>
         )
     };
 
@@ -104,7 +104,7 @@ macro_rules! make_config_impl {
         $(, default_val_fmt: $default_val_fmt:literal)?
         $(,)?
     ) => {{
-        let __config = $crate::readers::TextVar::from_var_name($var_name)
+        let __config = $crate::layers::TextVar::from_var_name($var_name)
             $(.description($description))?
             $(.default_fmt_val($default_val_fmt))?;
         $crate::__private::make_config_impl!(@__field_config_def_layers __config $($($layers)*)?)
@@ -175,7 +175,7 @@ macro_rules! make_config_impl {
     // ---------------
 
     (@__field_kind_ty $lt:lifetime $Config:ty) => {
-        <<$Config as $crate::exec::ConfigExecutor>::Iter<$lt> as
+        <<$Config as $crate::exec::ConfigInitializer>::Iter<$lt> as
             $crate::__private::iter::IntoIterator>::IntoIter
     };
 
@@ -201,14 +201,14 @@ macro_rules! make_config_impl {
     // ---------------
 
     (@__field_kind_call $self:ident $field:ident $Config:ty) => {
-        <$Config as $crate::exec::ConfigExecutor>::exec_raw(&$self.$field)
+        <$Config as $crate::exec::ConfigInitializer>::init_raw(&$self.$field)
             .into_iter()
     };
 
     (@__field_kind_call $self:ident $field:ident var_name $($_rest:tt)*) => {
         $crate::__private::iter::once(
             $crate::exec::ExecResult {
-                config: $self.$field.describe_config_val(),
+                config: $self.$field.get_descriptor(),
                 error: $self.$field.try_read_var().err().map(From::from),
             }
         )
@@ -218,6 +218,7 @@ macro_rules! make_config_impl {
 #[doc(hidden)]
 pub use make_config_impl;
 
+/// Generates the definition of a configuration value set.
 #[macro_export]
 macro_rules! make_config {
     {
@@ -246,12 +247,12 @@ macro_rules! make_config {
             }
 
             #[automatically_derived]
-            impl $crate::exec::ConfigExecutor for $Name {
+            impl $crate::exec::ConfigInitializer for $Name {
                 type Iter<'a> = $crate::__private::make_config_impl!(@__field_kind
                     'a $([$($field_config)*])*
                 );
 
-                fn exec_raw(&self) -> Self::Iter<'_> {
+                fn init_raw(&self) -> Self::Iter<'_> {
                     #[allow(unused_imports)]
                     use $crate::prelude::*;
 
@@ -291,7 +292,7 @@ mod tests {
         }
 
         let config = TestConfig::define();
-        let res = config.exec_raw();
+        let res = config.init_raw();
 
         itertools::assert_equal(
             res.map(|res| res.config.var_name),
@@ -325,7 +326,7 @@ mod tests {
         }
 
         let config = Bar::define();
-        let res = config.exec_raw();
+        let res = config.init_raw();
 
         itertools::assert_equal(
             res.map(|res| res.config.var_name),

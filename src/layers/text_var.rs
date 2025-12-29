@@ -3,9 +3,9 @@
 use std::env;
 
 use crate::{
-    descriptor::{ConfValDescriptor, ConfigValDescriptor},
+    descriptor::{ConfigValueDescriptor, VarDescriptor},
     error::ReadVarError,
-    var_reader::VarReader,
+    layer::Layer,
 };
 
 /// A configuration value that simply returns the content of the environment variable.
@@ -21,14 +21,14 @@ use crate::{
 /// assert_eq!(res.as_deref(), Ok("foobar"));
 /// ```
 pub struct TextVar {
-    descriptor: ConfValDescriptor,
+    descriptor: VarDescriptor,
 }
 
 impl TextVar {
     /// Creates a [`TextVar`] from the environment variable key.
     pub fn from_var_name(var_name: &'static str) -> Self {
         Self {
-            descriptor: ConfValDescriptor {
+            descriptor: VarDescriptor {
                 var_name,
                 description: None,
                 default_val_fmt: None,
@@ -47,21 +47,21 @@ impl TextVar {
     /// Note: the content of the text is only used as an information to the user. It is up to you
     /// to really provide a default value with e.g. [`or_default_val`][1].
     ///
-    /// [1]: crate::builder::VarReaderExt::or_default_val
+    /// [1]: crate::builder::LayerExt::or_default_val
     pub fn default_fmt_val(mut self, default_fmt_val: &'static str) -> Self {
         self.descriptor.default_val_fmt = Some(default_fmt_val);
         self
     }
 }
 
-impl ConfigValDescriptor for TextVar {
+impl ConfigValueDescriptor for TextVar {
     #[inline(always)]
-    fn describe_config_val(&self) -> &ConfValDescriptor {
+    fn get_descriptor(&self) -> &VarDescriptor {
         &self.descriptor
     }
 }
 
-impl VarReader for TextVar {
+impl Layer for TextVar {
     type Output = String;
     type Error = ReadVarError;
 

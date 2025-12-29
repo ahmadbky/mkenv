@@ -3,9 +3,9 @@
 use std::{fmt, sync::OnceLock};
 
 use crate::{
-    descriptor::{ConfValDescriptor, ConfigValDescriptor},
+    descriptor::{ConfigValueDescriptor, VarDescriptor},
     error::CachedError,
-    var_reader::VarReader,
+    layer::Layer,
 };
 
 /// A cached configuration value.
@@ -33,55 +33,55 @@ use crate::{
 /// assert_eq!(res.map(|s| s.as_str()), Ok("foo"));
 /// ```
 ///
-/// [1]: crate::builder::VarReaderExt::cached
+/// [1]: crate::builder::LayerExt::cached
 pub struct Cached<V>
 where
-    V: VarReader,
+    V: Layer,
 {
     pub(crate) var: V,
-    pub(crate) cached: OnceLock<Result<<V as VarReader>::Output, <V as VarReader>::Error>>,
+    pub(crate) cached: OnceLock<Result<<V as Layer>::Output, <V as Layer>::Error>>,
 }
 
-impl<V: VarReader> Cached<V> {
-    /// Same as [`VarReader::try_read_var`], re-declared for more convenience with references.
+impl<V: Layer> Cached<V> {
+    /// Same as [`Layer::try_read_var`], re-declared for more convenience with references.
     #[inline(always)]
     pub fn try_read_var(
         &self,
-    ) -> Result<&<V as VarReader>::Output, CachedError<'_, <V as VarReader>::Error>> {
-        <&Self as VarReader>::try_read_var(&self)
+    ) -> Result<&<V as Layer>::Output, CachedError<'_, <V as Layer>::Error>> {
+        <&Self as Layer>::try_read_var(&self)
     }
 
-    /// Same as [`VarReader::read_var`], re-declared for more convenience with references.
+    /// Same as [`Layer::read_var`], re-declared for more convenience with references.
     #[inline(always)]
-    pub fn read_var(&self) -> &<V as VarReader>::Output
+    pub fn read_var(&self) -> &<V as Layer>::Output
     where
-        for<'a> &'a Self: ConfigValDescriptor,
-        <V as VarReader>::Error: fmt::Display,
+        for<'a> &'a Self: ConfigValueDescriptor,
+        <V as Layer>::Error: fmt::Display,
     {
-        <&Self as VarReader>::read_var(&self)
+        <&Self as Layer>::read_var(&self)
     }
 
     /// Takes the ownership of the cached result.
     ///
     /// It returns `None` if the configuration value hasn't been read yet.
-    pub fn take(&mut self) -> Option<Result<<V as VarReader>::Output, <V as VarReader>::Error>> {
+    pub fn take(&mut self) -> Option<Result<<V as Layer>::Output, <V as Layer>::Error>> {
         self.cached.take()
     }
 }
 
-impl<V: VarReader + ConfigValDescriptor> ConfigValDescriptor for Cached<V> {
+impl<V: Layer + ConfigValueDescriptor> ConfigValueDescriptor for Cached<V> {
     #[inline]
-    fn describe_config_val(&self) -> &ConfValDescriptor {
-        self.var.describe_config_val()
+    fn get_descriptor(&self) -> &VarDescriptor {
+        self.var.get_descriptor()
     }
 }
 
-impl<'a, V> VarReader for &'a Cached<V>
+impl<'a, V> Layer for &'a Cached<V>
 where
-    V: VarReader,
+    V: Layer,
 {
-    type Output = &'a <V as VarReader>::Output;
-    type Error = CachedError<'a, <V as VarReader>::Error>;
+    type Output = &'a <V as Layer>::Output;
+    type Error = CachedError<'a, <V as Layer>::Error>;
 
     fn try_read_var(&self) -> Result<Self::Output, Self::Error> {
         self.cached

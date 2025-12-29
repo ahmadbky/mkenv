@@ -2,6 +2,8 @@
 
 use std::{env::VarError, error::Error, fmt};
 
+use crate::exec::FmtExecResults;
+
 /// Generic error when reading an environment variable.
 #[derive(Debug)]
 pub enum ReadVarError {
@@ -46,6 +48,7 @@ pub struct ParseError {
 impl fmt::Display for ParseError {
     #[inline]
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str("parse error: ")?;
         fmt::Display::fmt(&self.source, f)
     }
 }
@@ -58,7 +61,7 @@ impl Error for ParseError {
 
 /// A cached error when reading the environment with [`Cached`][1].
 ///
-/// [1]: crate::readers::Cached
+/// [1]: crate::layers::Cached
 #[derive(PartialEq)]
 pub struct CachedError<'a, E>(pub(crate) &'a E);
 
@@ -84,5 +87,25 @@ impl<E: fmt::Debug> fmt::Debug for CachedError<'_, E> {
     #[inline(always)]
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         fmt::Debug::fmt(&self.0, f)
+    }
+}
+
+pub struct ConfigInitError<'a> {
+    pub(crate) error: FmtExecResults<'a>,
+}
+
+impl fmt::Debug for ConfigInitError<'_> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("ConfigInitError")
+            .field("correct_vars", &self.error.correct_vars)
+            .field("incorrect_vars", &self.error.incorrect_vars)
+            .finish()
+    }
+}
+
+impl fmt::Display for ConfigInitError<'_> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        writeln!(f, "Error during configuration initialization:")?;
+        fmt::Display::fmt(&self.error, f)
     }
 }

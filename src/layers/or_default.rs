@@ -3,8 +3,8 @@
 use std::convert::Infallible;
 
 use crate::{
-    descriptor::{ConfValDescriptor, ConfigValDescriptor},
-    var_reader::VarReader,
+    descriptor::{ConfigValueDescriptor, VarDescriptor},
+    layer::Layer,
 };
 
 /// Reads the inner configuration value, or returns a default value.
@@ -23,23 +23,23 @@ use crate::{
 /// assert_eq!(res.as_deref(), Ok("hello there"));
 /// ```
 ///
-/// [1]: crate::builder::VarReaderExt::or_default_val
-pub struct OrDefault<V: VarReader> {
+/// [1]: crate::builder::LayerExt::or_default_val
+pub struct OrDefault<V: Layer> {
     pub(crate) var: V,
-    pub(crate) default_fn: fn() -> <V as VarReader>::Output,
+    pub(crate) default_fn: fn() -> <V as Layer>::Output,
 }
 
-impl<V: VarReader + ConfigValDescriptor> ConfigValDescriptor for OrDefault<V> {
-    fn describe_config_val(&self) -> &ConfValDescriptor {
-        self.var.describe_config_val()
+impl<V: Layer + ConfigValueDescriptor> ConfigValueDescriptor for OrDefault<V> {
+    fn get_descriptor(&self) -> &VarDescriptor {
+        self.var.get_descriptor()
     }
 }
 
-impl<V> VarReader for OrDefault<V>
+impl<V> Layer for OrDefault<V>
 where
-    V: VarReader,
+    V: Layer,
 {
-    type Output = <V as VarReader>::Output;
+    type Output = <V as Layer>::Output;
     type Error = Infallible;
 
     fn try_read_var(&self) -> Result<Self::Output, Self::Error> {

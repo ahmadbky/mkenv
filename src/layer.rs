@@ -1,10 +1,10 @@
 use std::fmt;
 
-use crate::descriptor::ConfigValDescriptor;
+use crate::descriptor::ConfigValueDescriptor;
 
 /// Represents types able to read a value from the process environment.
 #[cfg_attr(docsrs, doc(notable_trait))]
-pub trait VarReader {
+pub trait Layer {
     /// The type of the read output.
     type Output;
     /// The type of the error.
@@ -21,11 +21,11 @@ pub trait VarReader {
     /// a formatted message about the variable that failed.
     fn read_var(&self) -> Self::Output
     where
-        Self: ConfigValDescriptor,
+        Self: ConfigValueDescriptor,
         Self::Error: fmt::Display,
     {
         self.try_read_var().unwrap_or_else(|e| {
-            let val_config = <Self as ConfigValDescriptor>::describe_config_val(self);
+            let val_config = <Self as ConfigValueDescriptor>::get_descriptor(self);
             panic!(
                 "couldn't get env var `{}` (expected type `{}`): {e}",
                 val_config.var_name,
@@ -35,11 +35,11 @@ pub trait VarReader {
     }
 }
 
-impl<T: VarReader> VarReader for &T {
-    type Output = <T as VarReader>::Output;
-    type Error = <T as VarReader>::Error;
+impl<T: Layer> Layer for &T {
+    type Output = <T as Layer>::Output;
+    type Error = <T as Layer>::Error;
 
     fn try_read_var(&self) -> Result<Self::Output, Self::Error> {
-        <T as VarReader>::try_read_var(self)
+        <T as Layer>::try_read_var(self)
     }
 }

@@ -1,10 +1,10 @@
-//! Module containing the [`VarReaderExt`] utility trait.
+//! Module containing the [`LayerExt`] utility trait.
 
 use std::{error::Error, str::FromStr};
 
 use crate::{
-    readers::{parsed::ParseFn, Cached, FileRead, OrDefault, Parsed},
-    var_reader::VarReader,
+    layer::Layer,
+    layers::{parsed::ParseFn, Cached, FileRead, OrDefault, Parsed},
 };
 
 /// Utility trait for building configuration value types.
@@ -22,11 +22,11 @@ use crate::{
 ///   })
 ///   .or_default_val(|| Duration::from_secs(3));
 /// ```
-pub trait VarReaderExt: Sized {
+pub trait LayerExt: Sized {
     /// Marks the configuration value to be cached.
     fn cached(self) -> Cached<Self>
     where
-        Self: VarReader,
+        Self: Layer,
     {
         Cached {
             var: self,
@@ -44,10 +44,10 @@ pub trait VarReaderExt: Sized {
     /// Note: if you wish to use the [`FromStr`] trait implementation for `T`, you may use the
     /// [`parsed_from_str`][1] method instead.
     ///
-    /// [1]: VarReaderExt::parsed_from_str
+    /// [1]: LayerExt::parsed_from_str
     fn parsed<T>(self, parse_fn: ParseFn<T>) -> Parsed<T, Self>
     where
-        Self: VarReader,
+        Self: Layer,
     {
         Parsed {
             parse_fn,
@@ -60,10 +60,10 @@ pub trait VarReaderExt: Sized {
     /// Note: if you wish to use a custom parsing function, you may use the [`parsed`][1] method
     /// instead.
     ///
-    /// [1]: VarReaderExt::parsed
+    /// [1]: LayerExt::parsed
     fn parsed_from_str<T>(self) -> Parsed<T, Self>
     where
-        Self: VarReader,
+        Self: Layer,
         T: FromStr<Err: Error + 'static>,
     {
         self.parsed(|input| {
@@ -75,9 +75,9 @@ pub trait VarReaderExt: Sized {
 
     /// Marks the configuration value to fallback to a default value on read, using the provided
     /// function.
-    fn or_default_val(self, default_fn: fn() -> <Self as VarReader>::Output) -> OrDefault<Self>
+    fn or_default_val(self, default_fn: fn() -> <Self as Layer>::Output) -> OrDefault<Self>
     where
-        Self: VarReader,
+        Self: Layer,
     {
         OrDefault {
             var: self,
@@ -89,10 +89,10 @@ pub trait VarReaderExt: Sized {
     #[inline]
     fn or_default(self) -> OrDefault<Self>
     where
-        Self: VarReader<Output: Default>,
+        Self: Layer<Output: Default>,
     {
         self.or_default_val(Default::default)
     }
 }
 
-impl<T: VarReader> VarReaderExt for T {}
+impl<T: Layer> LayerExt for T {}

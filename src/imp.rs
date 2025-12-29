@@ -440,7 +440,12 @@ macro_rules! make_env_impl {
     }};
 }
 
-/// See the [crate documentation](crate) to see how to use this.
+/// Generates the definition of an environment configuration.
+///
+/// Note: this macro is deprecated since version 0.2.0. You should use its new version:
+/// [`make_config`][1].
+///
+/// [1]: crate::make_config
 #[macro_export]
 macro_rules! make_env {
     ($(#[$($main_attr:tt)*])* $vis:vis $Name:ident $(includes [$($(#[doc = $include_doc:expr])* $IncludeName:ident as $include_field:ident),*])?: $(

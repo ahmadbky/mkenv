@@ -1,8 +1,8 @@
 //! Module containing configuration value types.
 //!
-//! Configuration value types are types implementing the [`VarReader`][1] trait.
+//! Configuration value types are types implementing the [`Layer`][1] trait.
 //!
-//! [1]: crate::var_reader::VarReader
+//! [1]: crate::layer::Layer
 
 pub mod cached;
 pub mod file_read;

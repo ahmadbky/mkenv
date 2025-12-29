@@ -19,13 +19,13 @@ make_config! {
 fn main() {
     // SAFETY: we're in a single thread program.
     unsafe {
-        env::set_var("TIMEOUT", "5000");
+        env::set_var("REQUEST_TIMEOUT", "foobar");
     }
 
     let config = MyConfig::define();
-    let res = config.try_exec();
+    let res = config.try_init();
     if let Err(res) = res {
-        eprintln!("error during env init: {res}");
+        eprintln!("{res}");
     } else {
         println!("everything is fine");
     }
