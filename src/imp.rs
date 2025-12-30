@@ -39,13 +39,7 @@ pub trait FmtReqEnv {
 }
 
 macro_rules! pluralize {
-    ($x:expr) => {{
-        if $x > 1 {
-            "s"
-        } else {
-            ""
-        }
-    }};
+    ($x:expr) => {{ if $x > 1 { "s" } else { "" } }};
 }
 
 impl<E: FmtReqEnv> fmt::Display for CapturedVarsInner<E> {
@@ -367,11 +361,6 @@ impl fmt::Display for Error {
 impl StdError for Error {}
 
 #[doc(hidden)]
-pub mod __private {
-    pub use std::fmt;
-}
-
-#[doc(hidden)]
 #[macro_export]
 macro_rules! make_env_impl {
     (@__default_span) => { "" };
@@ -445,7 +434,13 @@ macro_rules! make_env_impl {
     }};
 }
 
-/// See the [crate documentation](crate) to see how to use this.
+/// Generates the definition of an environment configuration.
+///
+/// Note: this macro is deprecated since version 1.0.0. You should use its new version:
+/// [`make_config`][1]. See the documentation about the [migration][2] to it.
+///
+/// [1]: crate::make_config
+/// [2]: crate#migration-from-v01
 #[macro_export]
 macro_rules! make_env {
     ($(#[$($main_attr:tt)*])* $vis:vis $Name:ident $(includes [$($(#[doc = $include_doc:expr])* $IncludeName:ident as $include_field:ident),*])?: $(
