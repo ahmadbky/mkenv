@@ -109,3 +109,5 @@ impl fmt::Display for ConfigInitError<'_> {
         fmt::Display::fmt(&self.error, f)
     }
 }
+
+impl Error for ConfigInitError<'_> {}
