@@ -71,7 +71,7 @@ impl fmt::Display for FmtExecResults<'_> {
             writeln!(f, "- `{}`", var.var_name)?;
         }
 
-        writeln!(f, "Full required environment description:")?;
+        writeln!(f, "Note: full required environment description:")?;
         for var_desc in self
             .incorrect_vars
             .iter()
