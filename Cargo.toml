@@ -1,6 +1,6 @@
 [package]
 name = "mkenv"
-version = "1.0.1"
+version = "1.0.2"
 edition = "2024"
 authors = ["Ahmad Baalbaky <ahmadjfbky@gmail.com>"]
 description = "Lightweight yet useful library to help you define the environment your app needs"
