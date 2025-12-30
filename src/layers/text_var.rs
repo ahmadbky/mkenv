@@ -44,7 +44,7 @@ impl TextVar {
 
     /// Changes the default value shown in the configuration descriptor.
     ///
-    /// Note: the content of the text is only used as an information to the user. It is up to you
+    /// Note: the content of the text is only used as information to the user. It is up to you
     /// to really provide a default value with e.g. [`or_default_val`][1].
     ///
     /// [1]: crate::builder::LayerExt::or_default_val

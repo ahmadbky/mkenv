@@ -1,4 +1,4 @@
-//! Contains every error types.
+//! Contains all error types.
 
 use std::{env::VarError, error::Error, fmt};
 

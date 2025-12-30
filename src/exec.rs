@@ -125,7 +125,7 @@ pub trait ConfigInitializer {
     /// the related environment variable for the first time (if not done previously).
     ///
     /// The consequence is that for next reads using the [`Layer`] trait, even if the
-    /// environment changed in the mean time, the result will always be the same for the fields
+    /// environment changed in the meantime, the result will always be the same for the fields
     /// using the cached type.
     ///
     /// # Example
