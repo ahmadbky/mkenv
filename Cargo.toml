@@ -22,3 +22,7 @@ nightly = []
 [package.metadata.docs.rs]
 all-features = true
 rustdoc-args = ["--generate-link-to-definition", "-Zunstable-options", "-Zrustdoc-scrape-examples"]
+
+[[example]]
+name = "simple"
+doc-scrape-examples = true
