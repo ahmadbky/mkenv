@@ -287,6 +287,7 @@ mod macros;
 
 #[cfg(test)]
 pub(crate) mod tests;
+pub(crate) mod test_default_fmt_val;
 
 pub use builder::LayerExt;
 pub use descriptor::{ConfigDescriptor, ConfigValueDescriptor, VarDescriptor};
