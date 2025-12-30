@@ -15,7 +15,7 @@ pub trait Layer {
 
     /// Reads and returns the value from the environment, or panics on error.
     ///
-    /// # Panic
+    /// # Panics
     ///
     /// This function panics if it couldn't read the value from the environment, by printing
     /// a formatted message about the variable that failed.

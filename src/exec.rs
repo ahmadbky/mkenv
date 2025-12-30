@@ -119,7 +119,7 @@ pub trait ConfigInitializer {
 
     /// Reads the whole configuration values set, and returns the result in the form of an iterator.
     ///
-    /// # Note about caching
+    /// # Note
     ///
     /// Please note that for types using a cached configuration, this method will make it use
     /// the related environment variable for the first time (if not done previously).
@@ -156,7 +156,7 @@ pub trait ConfigInitializer {
     ///
     /// If some fields use a cached layer, consider reading the note about [caching][1]
     ///
-    /// # Return
+    /// # Returns
     ///
     /// This method returns `Err(_)` if any configuration value failed to read, and `Ok(_)`
     /// otherwise.
@@ -175,7 +175,7 @@ pub trait ConfigInitializer {
     ///
     /// If some fields use a cached layer, consider reading the note about [caching][1]
     ///
-    /// # Panic
+    /// # Panics
     ///
     /// This method panics if any configuration value failed to read.
     ///
