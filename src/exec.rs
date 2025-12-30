@@ -26,7 +26,7 @@ impl<'a> ExecResult<'a> {
     {
         Self {
             config: config.get_descriptor(),
-            error: config.try_read_var().err().map(From::from),
+            error: config.try_get().err().map(From::from),
         }
     }
 }
@@ -146,9 +146,9 @@ pub trait ConfigInitializer {
     /// let config = MyConfig::define();
     /// // Once this method is called...
     /// let _ = config.init_raw();
-    /// // ...the return of the `read_var` for this field
+    /// // ...the return of the `get` for this field
     /// // will always be the same.
-    /// let user = config.user.read_var();
+    /// let user = config.user.get();
     /// ```
     fn init_raw(&self) -> Self::Iter<'_>;
 

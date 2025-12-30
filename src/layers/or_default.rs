@@ -19,7 +19,7 @@ use crate::{
 /// # use mkenv::prelude::*;
 /// let my_config = TextVar::from_var_name("LASTNAME")
 ///   .or_default_val(|| "hello there".to_owned());
-/// let res = my_config.try_read_var();
+/// let res = my_config.try_get();
 /// assert_eq!(res.as_deref(), Ok("hello there"));
 /// ```
 ///
@@ -42,11 +42,8 @@ where
     type Output = <V as Layer>::Output;
     type Error = Infallible;
 
-    fn try_read_var(&self) -> Result<Self::Output, Self::Error> {
-        Ok(self
-            .var
-            .try_read_var()
-            .unwrap_or_else(|_| (self.default_fn)()))
+    fn try_get(&self) -> Result<Self::Output, Self::Error> {
+        Ok(self.var.try_get().unwrap_or_else(|_| (self.default_fn)()))
     }
 }
 
@@ -60,7 +57,7 @@ mod tests {
 
         let config = TextVar::from_var_name(VAR_NAME).or_default_val(|| "hello".to_owned());
 
-        let Ok(res) = with_env([], || config.try_read_var());
+        let Ok(res) = with_env([], || config.try_get());
         assert_eq!(res, "hello");
     }
 
@@ -70,7 +67,7 @@ mod tests {
 
         let config = TextVar::from_var_name(VAR_NAME).or_default_val(|| "hello".to_owned());
 
-        let Ok(res) = with_env([(VAR_NAME, "hi")], || config.try_read_var());
+        let Ok(res) = with_env([(VAR_NAME, "hi")], || config.try_get());
         assert_eq!(res, "hi");
     }
 }

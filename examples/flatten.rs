@@ -22,6 +22,6 @@ fn main() {
     bar.init();
     println!("ok!");
 
-    println!("{:?}", bar.foo.var_a.try_read_var());
-    println!("{:?}", bar.var_b.try_read_var());
+    println!("{:?}", bar.foo.var_a.try_get());
+    println!("{:?}", bar.var_b.try_get());
 }

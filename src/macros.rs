@@ -209,7 +209,7 @@ macro_rules! make_config_impl {
         $crate::__private::iter::once(
             $crate::exec::ExecResult {
                 config: $self.$field.get_descriptor(),
-                error: $self.$field.try_read_var().err().map(From::from),
+                error: $self.$field.try_get().err().map(From::from),
             }
         )
     };

@@ -22,7 +22,7 @@ pub type ParseFn<T> = fn(&str) -> Result<T, Box<dyn Error>>;
 /// # unsafe { std::env::set_var("TIMEOUT_MS", "30"); }
 /// let my_config = TextVar::from_var_name("TIMEOUT_MS")
 ///   .parsed_from_str::<u64>();
-/// let res = my_config.try_read_var();
+/// let res = my_config.try_get();
 /// # unsafe { std::env::remove_var("TIMEOUT_MS"); }
 /// assert_eq!(res, Ok(30));
 /// ```
@@ -48,8 +48,8 @@ where
     type Output = T;
     type Error = ReadVarError;
 
-    fn try_read_var(&self) -> Result<Self::Output, Self::Error> {
-        let raw_val = self.var.try_read_var()?;
+    fn try_get(&self) -> Result<Self::Output, Self::Error> {
+        let raw_val = self.var.try_get()?;
         let parse_res = (self.parse_fn)(raw_val.as_ref());
         parse_res.map_err(|source| ReadVarError::Other(Box::new(ParseError { source })))
     }
@@ -75,7 +75,7 @@ mod tests {
 
         let config = TextVar::from_var_name(VAR_NAME).parsed_from_str::<i32>();
 
-        let res = with_env([(VAR_NAME, "30")], || config.try_read_var());
+        let res = with_env([(VAR_NAME, "30")], || config.try_get());
         assert_matches!(res, Ok(30));
     }
 
@@ -93,7 +93,7 @@ mod tests {
                 .is_some()
         }
 
-        let res = with_env([(VAR_NAME, "foobar")], || config.try_read_var());
+        let res = with_env([(VAR_NAME, "foobar")], || config.try_get());
         assert_matches!(res, Err(ReadVarError::Other(e)) if is_parse_error(&*e));
     }
 
@@ -108,7 +108,7 @@ mod tests {
                 .map_err(From::from)
         });
 
-        let res = with_env([(VAR_NAME, "250")], || config.try_read_var());
+        let res = with_env([(VAR_NAME, "250")], || config.try_get());
         assert_matches!(res, Ok(d) if d.as_millis() == 250);
     }
 }

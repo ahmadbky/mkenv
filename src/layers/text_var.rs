@@ -16,7 +16,7 @@ use crate::{
 /// # use mkenv::prelude::*;
 /// # unsafe { std::env::set_var("USER_FIRSTNAME", "foobar"); }
 /// let my_config = TextVar::from_var_name("USER_FIRSTNAME");
-/// let res = my_config.try_read_var();
+/// let res = my_config.try_get();
 /// # unsafe { std::env::remove_var("USER_FIRSTNAME"); }
 /// assert_eq!(res.as_deref(), Ok("foobar"));
 /// ```
@@ -65,7 +65,7 @@ impl Layer for TextVar {
     type Output = String;
     type Error = ReadVarError;
 
-    fn try_read_var(&self) -> Result<Self::Output, Self::Error> {
+    fn try_get(&self) -> Result<Self::Output, Self::Error> {
         env::var(self.descriptor.var_name).map_err(ReadVarError::Var)
     }
 }
@@ -86,7 +86,7 @@ mod tests {
 
         let config = TextVar::from_var_name(VAR_NAME);
 
-        let res = with_env([], || config.try_read_var());
+        let res = with_env([], || config.try_get());
         assert_matches!(res, Err(ReadVarError::Var(VarError::NotPresent)));
     }
 
@@ -96,7 +96,7 @@ mod tests {
 
         let config = TextVar::from_var_name(VAR_NAME);
 
-        let res = with_env([(VAR_NAME, "hello there")], || config.try_read_var());
+        let res = with_env([(VAR_NAME, "hello there")], || config.try_get());
         assert_matches!(res.as_deref(), Ok("hello there"));
     }
 }
