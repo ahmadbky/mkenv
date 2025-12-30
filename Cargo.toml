@@ -21,7 +21,8 @@ nightly = []
 
 [package.metadata.docs.rs]
 all-features = true
-rustdoc-args = ["--generate-link-to-definition", "-Zunstable-options", "-Zrustdoc-scrape-examples"]
+cargo-args = ["-Zunstable-options", "-Zrustdoc-scrape-examples"]
+rustdoc-args = ["--generate-link-to-definition"]
 
 [[example]]
 name = "simple"
