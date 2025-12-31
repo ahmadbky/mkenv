@@ -3,17 +3,17 @@ mod tests {
     use crate::make_config;
     use crate::prelude::*;
 
-    make_config! {
-        struct MyConfig {
-          url: {
-            var_name: "MY_URL",
-            description: "Some URL",
-          }
-        }
-    }
-
     #[test]
     fn test_default_fmt_val() {
+        make_config! {
+            struct MyConfig {
+              url: {
+                var_name: "MY_URL",
+                description: "Some URL",
+              }
+            }
+        }
+
         unsafe {
             std::env::set_var("MY_URL", "asd");
         }
