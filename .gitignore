@@ -1,2 +1,5 @@
 /target
 .zed
+tarpaulin-report.*
+cobertura.xml
+lcov.info
