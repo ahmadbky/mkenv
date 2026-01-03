@@ -19,7 +19,8 @@ jobs:
     - uses: dtolnay/rust-toolchain@stable
       with:
         toolchain: 1.92.0
-    - name: Check formattint
+        components: rustfmt
+    - name: Check formatting
       run: cargo fmt --check
     - name: Build
       run: cargo build --verbose
