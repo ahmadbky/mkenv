@@ -4,7 +4,7 @@ use std::{error::Error, str::FromStr};
 
 use crate::{
     layer::Layer,
-    layers::{parsed::ParseFn, Cached, FileRead, OrDefault, Parsed},
+    layers::{Cached, FileRead, OrDefault, Parsed, parsed::ParseFn},
 };
 
 /// Utility trait for building configuration value types.
